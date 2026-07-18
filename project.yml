@@ -1,0 +1,28 @@
+name: Animated
+options:
+  bundleIdPrefix: dev.darky
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+
+targets:
+  Animated:
+    type: application
+    platform: macOS
+    sources:
+      - Sources
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDisplayName: Animated
+        LSUIElement: true
+        NSHumanReadableCopyright: © 2026
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.darky.animated
+        SWIFT_VERSION: "5.0"
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        DEVELOPMENT_TEAM: ""
+        ENABLE_HARDENED_RUNTIME: false
+        COMBINE_HIDPI_IMAGES: true
