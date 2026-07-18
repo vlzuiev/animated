@@ -15,8 +15,10 @@ targets:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: Animated
+        CFBundleShortVersionString: 1.0.0
+        CFBundleVersion: "1"
         LSUIElement: true
-        NSHumanReadableCopyright: © 2026
+        NSHumanReadableCopyright: © 2026 Vladyslav Zuiev
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.darky.animated
