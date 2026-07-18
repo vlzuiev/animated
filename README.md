@@ -6,6 +6,8 @@
 
 **Turn any video into a live animated wallpaper on your Mac — including the real lock screen.** Free, open source, native Swift, no account, no tracking.
 
+![Animated — free animated video wallpapers for macOS, desktop and lock screen](docs/social-preview.png)
+
 ## Download
 
 **[⬇ Download the latest release](https://github.com/vlzuiev/animated/releases/latest)** — unzip, move `Animated.app` to Applications, open.
