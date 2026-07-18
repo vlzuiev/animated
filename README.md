@@ -1,6 +1,16 @@
 # Animated — Free Animated Wallpapers for macOS (Desktop + Lock Screen)
 
+[![Latest release](https://img.shields.io/github/v/release/vlzuiev/animated)](https://github.com/vlzuiev/animated/releases/latest)
+[![Platform](https://img.shields.io/badge/platform-macOS%2026%2B-blue)](#requirements)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 **Turn any video into a live animated wallpaper on your Mac — including the real lock screen.** Free, open source, native Swift, no account, no tracking.
+
+## Download
+
+**[⬇ Download the latest release](https://github.com/vlzuiev/animated/releases/latest)** — unzip, move `Animated.app` to Applications, open.
+
+On first launch macOS blocks the app (it's a free open-source project, not notarized by Apple): go to **System Settings → Privacy & Security**, scroll down, click **"Open Anyway"** and confirm — needed exactly once. Then click the ✦ star in the menu bar, **Choose Video…**, and enjoy. Prefer compiling yourself? See [Build from source](#build-from-source).
 
 Animated is a lightweight menu bar app for **macOS 26 (Tahoe)** that plays a muted, looping video **behind your desktop icons** and installs the same video as your **lock screen live wallpaper** — something macOS normally reserves for Apple's own aerial videos.
 
@@ -32,10 +42,10 @@ Everything happens inside your user account — no admin rights, no system files
 - One Apple aerial wallpaper downloaded once via System Settings → Wallpaper (the "slot" we borrow)
 - To build: Xcode 16+, [Homebrew](https://brew.sh), XcodeGen (`brew install xcodegen`)
 
-## Build and run
+## Build from source
 
 ```sh
-git clone <this-repo>
+git clone https://github.com/vlzuiev/animated.git
 cd animated
 xcodegen generate
 xcodebuild -project Animated.xcodeproj -scheme Animated -configuration Debug -derivedDataPath build build
