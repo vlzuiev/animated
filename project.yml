@@ -10,11 +10,16 @@ targets:
     type: application
     platform: macOS
     sources:
-      - Sources
+      - path: Sources
+        excludes:
+          - AppIcon.icns
+      - path: Sources/AppIcon.icns
+        buildPhase: resources
     info:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: Animated
+        CFBundleIconFile: AppIcon
         CFBundleShortVersionString: 1.0.0
         CFBundleVersion: "1"
         LSUIElement: true
