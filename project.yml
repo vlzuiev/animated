@@ -20,8 +20,8 @@ targets:
       properties:
         CFBundleDisplayName: Animated
         CFBundleIconFile: AppIcon
-        CFBundleShortVersionString: 1.0.0
-        CFBundleVersion: "1"
+        CFBundleShortVersionString: 1.0.1
+        CFBundleVersion: "2"
         LSUIElement: true
         NSHumanReadableCopyright: © 2026 Vladyslav Zuiev
     settings:
