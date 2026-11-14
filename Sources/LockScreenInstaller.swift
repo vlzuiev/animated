@@ -41,6 +41,10 @@ final class LockScreenInstaller {
     private var backupDir: URL {
         home.appendingPathComponent("Library/Application Support/Animated/backups")
     }
+    /// Which wallpaper is selected per display and Space.
+    private var wallpaperStore: URL {
+        home.appendingPathComponent("Library/Application Support/com.apple.wallpaper/Store/Index.plist")
+    }
 
     /// Deletes leftover export files from interrupted or failed installs.
     /// Safe while no export is running — installs are user-serial.
@@ -66,8 +70,8 @@ final class LockScreenInstaller {
     }
 
     /// Full pipeline: convert → backup original (once) → atomic swap → reload renderer.
-    /// Returns true when this was the very first install (one-time
-    /// System Settings selection still needed).
+    /// Returns true when the user still has to select the aerial in
+    /// System Settings themselves.
     @discardableResult
     func install(videoURL: URL) async throws -> Bool {
         let slot = try findSlot()
@@ -110,9 +114,13 @@ final class LockScreenInstaller {
 
         // 5. Make the system pick up the new file — but never mid-lock, that
         //    blanks the running animation; the unlock reset covers it then.
+        _ = selectSlotWhereDefault()
         if !LockScreenRefresher.shared.isCurrentlyLocked {
             reloadWallpaperRenderer()
         }
+        // macOS 26 can't tell whether the aerial is selected (its "default"
+        // is the slot), so it asks once. macOS 27 asks only when it isn't.
+        if #available(macOS 27, *) { return needsWallpaperSelection }
         return firstInstall
     }
 
@@ -169,6 +177,62 @@ final class LockScreenInstaller {
     var isInstalled: Bool {
         guard let slot = try? findSlot() else { return false }
         return fm.fileExists(atPath: backupURL(for: slot).path)
+    }
+
+    /// macOS 27 plays the slot only where its aerial is selected by name.
+    /// The "default" wallpaper — what macOS 26 stored for Tahoe Day — now
+    /// means a video on the read-only system volume. So every "default"
+    /// desktop choice (all displays and Spaces) becomes the explicit
+    /// selection System Settings would store; the user's own picks stay.
+    /// Returns true when the store changed and WallpaperAgent must reload.
+    private func selectSlotWhereDefault() -> Bool {
+        guard #available(macOS 27, *), let slot = try? findSlot(),
+              let data = try? Data(contentsOf: wallpaperStore),
+              let store = try? PropertyListSerialization.propertyList(
+                from: data, options: .mutableContainers, format: nil
+              ),
+              let config = try? PropertyListSerialization.data(
+                fromPropertyList: ["assetID": slot.deletingPathExtension().lastPathComponent],
+                format: .binary, options: 0
+              ) else { return false }
+
+        var changed = false
+        func visit(_ node: Any, isDesktop: Bool) {
+            guard let dict = node as? NSMutableDictionary else { return }
+            if isDesktop,
+               let choices = (dict["Content"] as? NSDictionary)?["Choices"] as? [NSMutableDictionary] {
+                for choice in choices where choice["Provider"] as? String == "default" {
+                    choice["Provider"] = "com.apple.wallpaper.choice.aerials"
+                    choice["Configuration"] = config
+                    changed = true
+                }
+            }
+            for (key, value) in dict { visit(value, isDesktop: key as? String == "Desktop") }
+        }
+        visit(store, isDesktop: false)
+
+        guard changed, let out = try? PropertyListSerialization.data(
+            fromPropertyList: store, format: .binary, options: 0
+        ) else { return false }
+        return (try? out.write(to: wallpaperStore, options: .atomic)) != nil
+    }
+
+    /// Launch-time version of the above (covers upgrading to macOS 27 with
+    /// the video already installed); `install` does it on its own.
+    func adoptDefaultWallpaper() {
+        if selectSlotWhereDefault(), !LockScreenRefresher.shared.isCurrentlyLocked {
+            reloadWallpaperRenderer()
+        }
+    }
+
+    /// macOS 27: true while no wallpaper choice points at the slot — the
+    /// user picked something else everywhere, only they can change that.
+    private var needsWallpaperSelection: Bool {
+        guard let slot = try? findSlot(), let store = try? Data(contentsOf: wallpaperStore)
+        else { return false }
+        // shortcut: raw search for the aerial's ID anywhere in the binary
+        // plist (any display or space), parse per display if it misjudges.
+        return store.range(of: Data(slot.deletingPathExtension().lastPathComponent.utf8)) == nil
     }
 
     private func exportSlotVideo(source: URL, preset: String) async throws -> URL {
@@ -229,11 +293,14 @@ final class LockScreenInstaller {
         return out
     }
 
-    /// Unlock-time reset: restart only the (wedge-prone) renderer extension.
-    /// Leaving WallpaperAgent alive makes the restart much faster, which
-    /// matters when the user relocks within a second or two.
+    /// Unlock-time reset of the (wedge-prone) renderer extension.
+    /// macOS 26 relaunches a killed extension by itself, and leaving
+    /// WallpaperAgent alive keeps that fast enough for a rapid relock.
+    /// macOS 27 never relaunches it — the lock screen stays static until
+    /// WallpaperAgent restarts — so there the agent goes too (~0.3 s).
     func resetRenderer() {
         kill("WallpaperAerialsExtension")
+        if #available(macOS 27, *) { kill("WallpaperAgent") }
     }
 
     /// Install-time reset: full restart of both processes so the new file is

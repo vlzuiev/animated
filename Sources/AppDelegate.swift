@@ -32,6 +32,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // Already installed — still refresh the poster so the lock
             // screen's still image always matches the current video.
             Task { await LockScreenInstaller.shared.refreshPoster(from: videoURL) }
+            LockScreenInstaller.shared.adoptDefaultWallpaper()
             return
         }
         installToLockScreen(videoURL: videoURL)
@@ -56,9 +57,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private static func installToLockScreen(videoURL: URL) {
         Task {
             do {
-                let firstInstall = try await LockScreenInstaller.shared.install(videoURL: videoURL)
+                let needsSelection = try await LockScreenInstaller.shared.install(videoURL: videoURL)
                 UserDefaults.standard.set(videoURL.path, forKey: installedLockScreenKey)
-                if firstInstall {
+                if needsSelection {
                     await alert(
                         title: "One-time lock screen setup",
                         text: "In System Settings → Wallpaper, select the “Tahoe Day” aerial — it is now secretly your video. From now on, every video you choose applies to the lock screen automatically. Lock with Ctrl+Cmd+Q and wake the Mac to see it.",
