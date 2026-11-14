@@ -86,6 +86,10 @@ Convert them to MP4 first (any converter works). The app accepts what macOS play
 - Lock screen slot files can be large (the video is tiled to ~3 minutes at source bitrate).
 - On macOS 27, System Settings → Wallpaper shows the borrowed aerial (for example "Tahoe Day") as your wallpaper. Picking a different wallpaper there replaces your video on the lock screen until you select that aerial again.
 
+## Contributing
+
+Bug reports and pull requests are welcome. [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) explains how to build, test and debug the app, and how the lock screen technique works. For maintainers, the release process is in [docs/RELEASING.md](docs/RELEASING.md).
+
 ## Credits & prior art
 
 - [Wallpaper-Sync](https://github.com/GonzaloRojas14/Wallpaper-Sync) — proved the aerial-swap technique on Tahoe; studying its scripts saved this project days of reverse engineering.
