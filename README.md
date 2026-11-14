@@ -14,7 +14,7 @@
 
 On first launch macOS blocks the app (it's a free open-source project, not notarized by Apple): go to **System Settings → Privacy & Security**, scroll down, click **"Open Anyway"** and confirm — needed exactly once. Then click the ✦ star in the menu bar, **Choose Video…**, and enjoy. Prefer compiling yourself? See [Build from source](#build-from-source).
 
-Animated is a lightweight menu bar app for **macOS 26 (Tahoe)** that plays a muted, looping video **behind your desktop icons** and installs the same video as your **lock screen live wallpaper** — something macOS normally reserves for Apple's own aerial videos.
+Animated is a lightweight menu bar app for **macOS 26 (Tahoe) and macOS 27** that plays a muted, looping video **behind your desktop icons** and installs the same video as your **lock screen live wallpaper** — something macOS normally reserves for Apple's own aerial videos.
 
 > Works with any MP4 or MOV you own. 4K supported, hardware-decoded, a few percent CPU.
 
@@ -34,7 +34,7 @@ Animated is a lightweight menu bar app for **macOS 26 (Tahoe)** that plays a mut
 macOS doesn't offer an API for custom animated wallpapers. Animated combines two techniques:
 
 1. **Desktop**: a borderless window one layer below the desktop icons plays your video with `AVPlayerLooper` — the classic live-wallpaper approach used by every wallpaper app.
-2. **Lock screen**: on macOS 26 Apple stores its animated "aerial" wallpapers in your own home folder. Animated converts your video into aerial format (tiled to ~3 minutes, audio stripped, `.mov`) and swaps it into a downloaded aerial's slot — macOS then plays *your* video on the real lock screen, thinking it's its own. A backup of Apple's original is kept for clean restore.
+2. **Lock screen**: since macOS 26 Apple stores its animated "aerial" wallpapers in your own home folder. Animated converts your video into aerial format (tiled to ~3 minutes, audio stripped, `.mov`) and swaps it into a downloaded aerial's slot — macOS then plays *your* video on the real lock screen, thinking it's its own. A backup of Apple's original is kept for clean restore. On macOS 27 the app also selects that aerial as your wallpaper for you, because the system's new default wallpaper lives on the read-only system volume and can't be swapped.
 
 Everything happens inside your user account — no admin rights, no system files outside `~`, no SIP changes.
 
@@ -62,19 +62,19 @@ A ✦ star icon appears in the menu bar. Click **Choose Video…**, pick a video
 Yes — this app plays any MP4/MOV as a looping desktop wallpaper on macOS, for free.
 
 ### Can the Mac lock screen have an animated wallpaper?
-Natively only Apple's built-in aerials animate on the lock screen. Animated makes the lock screen play *your* video on macOS 26 by swapping it into the aerial store in your home folder.
+Natively only Apple's built-in aerials animate on the lock screen. Animated makes the lock screen play *your* video on macOS 26 and 27 by swapping it into the aerial store in your home folder.
 
 ### Does it work on macOS Sonoma or Sequoia?
-The desktop wallpaper works on any recent macOS. The lock screen technique targets macOS 26 (Tahoe), where the aerial store moved into the user's home folder.
+The desktop wallpaper works on any recent macOS. The lock screen technique needs macOS 26 (Tahoe) or macOS 27, where the aerial store lives in the user's home folder.
 
 ### Is it safe? Can I undo it?
-Everything stays inside your user folder, and Apple's original video is backed up before the first swap. **Use Apple Background** in the menu restores everything exactly.
+Everything stays inside your user folder, and Apple's original video is backed up before the first swap. **Use Apple Background** in the menu puts Apple's video back exactly. On macOS 27 your wallpaper then stays set to that aerial; pick another one in System Settings → Wallpaper if you prefer.
 
 ### Why isn't this on the App Store?
 The lock screen trick requires an unsandboxed app writing to the wallpaper store — impossible under App Store rules. That's why commercial apps with this feature are paid direct downloads.
 
 ### Does a macOS update break it?
-An update may restore Apple's aerial video. Your desktop keeps working; just re-pick your video to reinstall the lock screen.
+An update may restore Apple's aerial video. Your desktop keeps working; just re-pick your video to reinstall the lock screen. Upgrading from macOS 26 to macOS 27 needs Animated 1.0.2 or later — older versions leave the lock screen on Apple's video or a still image.
 
 ### GIF or WebM wallpapers?
 Convert them to MP4 first (any converter works). The app accepts what macOS plays natively: MP4, MOV, M4V.
@@ -84,6 +84,7 @@ Convert them to MP4 first (any converter works). The app accepts what macOS play
 - The pre-login screen after a cold boot (FileVault) stays static — that screen exists before your session.
 - Right after switching videos, the first lock may show the previous frame for a second (system snapshot cache, self-heals).
 - Lock screen slot files can be large (the video is tiled to ~3 minutes at source bitrate).
+- On macOS 27, System Settings → Wallpaper shows the borrowed aerial (for example "Tahoe Day") as your wallpaper. Picking a different wallpaper there replaces your video on the lock screen until you select that aerial again.
 
 ## Credits & prior art
 
